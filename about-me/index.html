@@ -1,0 +1,37 @@
+---
+layout: default
+title: About Me
+---
+
+<section class="about">
+  {% if include.divider == true %}
+    <div class="wrap"><hr/></div>
+    {% endif %}
+  <div class="wrap grid">
+
+    <div class="about__image">
+      <img src="{{ '/images/rachelle.jpg' | relative_url }}" alt="Photo of Rachelle">
+
+      {% include component-socials.html %}
+    </div>
+
+    <div class="about__content">
+      	<header class="header" style="padding-bottom:40px;">
+		<div class="wrap">
+			<h3>Hi, I'm Rachelle &#128075;&#127997;</h3>
+			<h5 class="intro subtitle--light">Nice to meet you.</h5>		
+		</div>
+	</header>
+     
+	<div class="wrap">
+		<p>I have always been a curious person. I like to ask questions, to learn as much as I can and find creative ways to solve problems. This curiosity and drive to learn are what led me to find myself in the technology industry.</p>
+
+    <p>With over five years of experience in the technology field, I am currently an <strong>IT Administrator</strong> specializing in security, privacy, and training.</p>
+
+    <p>When I'm not at work, I'm focused on completing the OSCP certification, solving Hack The Box machines, and part of the BugCrowd program.</p>
+
+		<a href="#" class="cta button--fill contact-trigger js-contact">Let's Connect</a>
+	</div>
+    </div>
+  </div>
+</section>
