@@ -69,9 +69,10 @@ color_settings:
   error_color: '#561D25'
 
 font_settings:
-  font_embed: '<link href="https://fonts.googleapis.com/css?family=Rubik:400,500,700|Ubuntu+Mono:400,700" rel="stylesheet">'
+  font_embed: '<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Ubuntu:wght@500&display=swap" rel="stylesheet">'
   title_font: 'Rubik, sans-serif'
-  body_font: '"Rubik", sans-serif'
+  body_font: 'Rubik, sans-serif'
+  code_font: '"Ubuntu", sans-serif'
   regular_weight: 400
   bold_weight: 700
   site_title:
