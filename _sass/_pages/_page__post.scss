@@ -252,9 +252,6 @@
   }
 
   @include mq(tabletp) {
-    .post__header {
-      padding-bottom: 80px;
-    }
 
     .post__title {
       margin-bottom: 32px;
