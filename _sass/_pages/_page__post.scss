@@ -6,7 +6,7 @@
 
 .page-post {
   .post__header {
-    padding-bottom: 48px;
+    padding-bottom: 20px;
   }
 
   .post__title {
@@ -49,10 +49,6 @@
       width: calc(100vw - 60px);
       max-width: 1140px;
       margin: 40px 0;
-    }
-
-    h2 {
-      margin: 80px 0 16px;
     }
 
     h3,
@@ -251,9 +247,6 @@
   }
 
   @include mq(tabletp) {
-    .post__header {
-      padding-bottom: 80px;
-    }
 
     .post__title {
       margin-bottom: 32px;

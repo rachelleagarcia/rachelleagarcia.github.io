@@ -1,9 +1,81 @@
 ---
 title: Lame
-date: 2020-05-02 00:00:00
+date: 2020-05-02 11:29:00
 description: Hack The Box Writeup
 featured_image: '/images/blog/Lame.png'
 tags: Hack The Box
 ---
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec feugiat odio ut risus gravida dictum. Quisque porta, erat nec malesuada elementum, enim mauris commodo magna, vitae lobortis nisi est eget ex. Nam a sem risus. Phasellus tempus ullamcorper aliquet. In sed consequat nisi, nec vulputate metus. Sed commodo eget lacus non blandit. Vivamus eget nibh ornare, luctus dui in, molestie nulla. Integer nec feugiat ex, pulvinar vestibulum mauris. Integer sollicitudin dui libero, nec blandit justo fringilla non. Etiam ut mi feugiat, porttitor odio ut, pharetra libero. Proin ornare sem metus, eu volutpat turpis consectetur sit amet.</p>
+<p>Lame was the first box released in Hack The Box (HTB). It's a good box to start with for anyone new to penetration testing since it's a relatively easy and gets you familiar with using Metasploit.</p>
+
+<h2>Hack the box</h2>
+<ul>
+	<li>Operating System: Linux</li>
+	<li>Difficulty: Easy</li>
+</ul>
+
+<h2>Information gathering</h2>
+
+<p>As always, let's start with enumeration by using nmap. I like to use:</p>
+
+<img src="{{ '/images/blog/nmapscan.jpeg' | relative_url }}" alt="nmap scan">
+
+<p>It can take a while for the nmap scan to complete, but once it's done, here are the results:</p>
+
+<img src="{{ '/images/blog/lamenmapscan.jpg' | relative_url }}" alt="nmap scan" style="width:80%">
+
+<p>Taking a look at the results, the most interesting ports are port 129 and 445 since they are SMB ports and SMB is a common internet file system that is known to have vulnerabilities. We can also see that they are both currently running <i>Samba smbd 3.X - 4.X</i>, so we can take a look in Metasploit to see if we can find any exploits.</p> 
+
+<h2>Threat modelling and vulnerability analysis</h2>
+
+<p>To access Metasploit, we can enter in Terminal:</p>
+
+<code>msfconfig</code>
+
+<p>It takes a few minutes for Metasploit to open. Once it opens, we can search for an exploit that is related to Samba by using Metasploit's search feature:</p>
+
+<code>search samba</code>
+
+<p>From the search results, this one looks promising:</p>
+
+<img src="{{ '/images/blog/lamemetasploit.jpg' | relative_url }}" alt="nmap scan">
+
+<p>And based on the description, it says:</p>
+
+<p><i>This module exploits a command execution vulnerability in Samba versions 3.0.20 through 3.0.25rc3 when using the non-default "username map script" configuration option. By specifying a username containing shell meta characters, attackers can execute arbitrary commands. No authentication is needed to exploit this vulnerability since this option is used to map usernames prior to authentication!</i></p>
+
+<p>So let's try using it!</p>
+
+<h2>Exploitation</h2>
+
+<p>To use an exploit, we can type in Metasploit:</p>
+
+<code>use exploit/multi/samba/usermap_script</code>
+
+<img src="{{ '/images/blog/lameexploit.jpg' | relative_url }}" alt="nmap scan">
+
+<p>Now we need to configure the exploit so we can use it to attack the machine.</p>
+
+<ul>
+	<li><code>options</code>: Gives us the visibility on what options we have to configure the exploit.</li>
+	<li><code>set rhosts 10.10.10.3</code>: This would be the victim's IP address.</li>
+	<li><code>show targets</code>: This is where we select the target's type (e.g. OS) that we're exploiting.</li>
+	<li><code>exploit</code>: Running the exploit.</li>
+</ul>
+
+<p>That worked! We now have access to the machine.</p>
+
+<p>We can type <code>shell</code> to see if we can gain shell access.</p>
+
+<img src="{{ '/images/blog/lameshell.jpg' | relative_url }}" alt="nmap scan" style="width:80%">
+
+<p>Once we have shell access, we can type in:</p>
+
+<ul>
+	<li><code>whoami</code>: Tells us the type of privileges that we have. It looks like we have root access--perfect.</li>
+	<li><code>pwd</code>: In other words, print working directory. We can see that we're in the /root folder.</li>
+</ul>
+
+<p>Since we have root access, we can locate both the root.txt and user.txt file to win the game. Remember to <code>cat</code> the file once you find it so you can read the contents and enter the flag into HTB.</p>
+
+<p>Congratulations! We now have root access to the box Lame.</p>
