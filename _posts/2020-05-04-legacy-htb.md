@@ -20,7 +20,7 @@ tags: ['Hack The Box']
 <p>Let's start with enumeration by using nmap. As always, I like to use:</p>
 
 
-<img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan">
+<img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan" width="80%">
 
 
 <p>Once the nmap scan completes, we can take a look at the results:</p>
@@ -29,13 +29,13 @@ tags: ['Hack The Box']
 <img src="/images/blog/legacy/nmapresults.jpg" alt="nmap results">
 
 
-<p>It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, <i>Windows XP</i>. Before we exploit this box, let's verify that the OS is the right one by using Metasploit's auxiliary module to find out the SMB version.</p>
+<p>It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, <i>Windows XP</i>. Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary module.</p>
 
 <p>To open up Meatsploit in Terminal, type in:</p>
 
 <code>msfconsole</code>
 
-Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. There's a lot of them auxiliary modules, so if you're not sure which one to use, we can search for it by typing in Metasploit: 
+Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. There's a lot of auxiliary modules, so if you're not sure which one to use, we can search for it by typing in Metasploit: 
 
 <code>search smb_version</code>
 
@@ -59,7 +59,7 @@ Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. Th
 <img src="/images/blog/legacy/auxiliary.jpg" alt="auxiliary scan">
 
 
-<p>Perfect! The results show that the box is currently running <i>Windows XP SP3</i>. Now that we have confirmed the OS that the SMB is on, let's try to see if we can find any existing exploits.</p>
+<p>Perfect! Based on the results above, the box is currently running <i>Windows XP SP3</i>. Now that we have confirmed the OS that the SMB is on, let's try to see if we can find any existing exploits.</p>
 
 <h2>Threat modelling and vulnerability analysis</h2>
 
@@ -77,7 +77,7 @@ Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. Th
 
 <h2>Exploitation</h2>
 
-<p>To use the exploit that we found in the threat modelling and vulnerability analysis phase, we can follow the instructions found in the above link and type in:</p>
+<p>To use the exploit that we found, we can follow the instructions found in the above link and type in:</p>
 
 <code>use exploit/windows/smb/ms08_067_netapi</code>
 
