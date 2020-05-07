@@ -20,7 +20,7 @@ tags: ['Hack The Box']
 <p>Let's start with enumeration by using nmap. As always, I like to use:</p>
 
 
-<img src="/images/blog/general/nmapscan.jpeg" alt="nmap scan">
+<img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan">
 
 
 <p>Once the nmap scan completes, we can take a look at the results:</p>
