@@ -6,7 +6,8 @@
 
 
 .header--single {
-	padding: 40px 0 48px;
+	padding-top: 40px;
+	padding-left: 0; 
 
 	.header__title {
 		margin-bottom: 16px;
@@ -17,6 +18,7 @@
 	}
 
 	@include mq(tabletp) {
-		padding: 56px 0 120px;
+		padding-top: 56px;
+		padding-left: 0;
 	}
 }

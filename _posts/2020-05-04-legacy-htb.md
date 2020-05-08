@@ -20,16 +20,20 @@ tags: ['Hack The Box']
 <p>Let's start with enumeration by using nmap. As always, I like to use:</p>
 
 
-<img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan" width="80%">
+<img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan">
 
 
 <p>Once the nmap scan completes, we can take a look at the results:</p>
 
 
-<img src="/images/blog/legacy/nmapresults.jpg" alt="nmap results">
+<img src="/images/blog/legacy/nmapresults1.jpg" alt="nmap results">
 
 
-<p>It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, <i>Windows XP</i>. Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary module.</p>
+<p>It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, <i>Windows XP</i>. </p>
+
+<img src="/images/blog/legacy/nmapresults2.jpg" alt="nmap results">
+
+<p>Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary module.</p>
 
 <p>To open up Meatsploit in Terminal, type in:</p>
 
