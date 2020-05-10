@@ -1,7 +1,7 @@
 ---
 title: Legacy
 date: 2020-05-04 19:16:00
-description: Hack The Box Writeup
+description: Hack The Box Walkthrough
 featured_image: '/images/blog/legacy/legacy.jpg'
 tags: ['Hack The Box']
 ---
