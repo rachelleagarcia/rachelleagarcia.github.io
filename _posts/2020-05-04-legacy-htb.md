@@ -6,7 +6,7 @@ featured_image: '/images/blog/legacy/legacy.jpg'
 tags: ['Hack The Box']
 ---
 
-<p>Legacy is the second machine on Hack The Box and aimed for beginners as it only requires one exploit to obtain root access.</p>
+<p>Legacy is also one of the first machines released on Hack The Box (HTB) and aimed for beginners. It is a Windows box that is vulnerable to SMB bugs and I'll be using Metasploit to exploit them.</p>
 
 <h2>Hack the box</h2>
 
@@ -33,13 +33,13 @@ tags: ['Hack The Box']
 
 <img src="/images/blog/legacy/nmapresults2.jpg" alt="nmap results">
 
-<p>Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary module.</p>
+<p>Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary modules.</p>
 
-<p>To open up Meatsploit in Terminal, type in:</p>
+<p>To open up Meatsploit whilst in the command line interface, type in:</p>
 
 <code>msfconsole</code>
 
-Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. There's a lot of auxiliary modules, so if you're not sure which one to use, we can search for it by typing in Metasploit: 
+Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. There are a lot of auxiliary modules, so if you're not sure which one to use, we can search for it by typing in Metasploit: 
 
 <code>search smb_version</code>
 
@@ -51,7 +51,7 @@ Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. Th
 
 <code>use auxiliary/scanner/smb/smb_version</code>
 
-<p>As always, I like to see what options I have when I use either an auxiliary or exploit module by typing in <code>options</code>. After taking a look at the options, I set the following: </p>
+<p>As always, I like to see what options I have when I use a Metasploit module by typing in <code>options</code>. After taking a look at the options, I set the following: </p>
 
 <ul>
 	<li><code>rhosts</code>: The IP address of the Legacy box.</li>
@@ -63,11 +63,11 @@ Once Metasploit opens, we can use Metasploit's auxiliary module, smb_version. Th
 <img src="/images/blog/legacy/auxiliary.jpg" alt="auxiliary scan">
 
 
-<p>Perfect! Based on the results above, the box is currently running <i>Windows XP SP3</i>. Now that we have confirmed the OS that the SMB is on, let's try to see if we can find any existing exploits.</p>
+<p>Perfect! Based on the results above, the box is currently running <i>Windows XP SP3</i>. Now that we have confirmed the OS that the SMB is on, let's look for any existing exploits.</p>
 
-<h2>Threat modelling and vulnerability analysis</h2>
+<h2>Threat modelling</h2>
 
-<p>In the last box (Lame), we used Metasploit's search feature to find an exploit, this time to make it interesting, we can use Google search. I normally like to look for results from Rapid7 (which is the same as Metasploit) or Exploit-db.</p>
+<p>In the last box (Lame), we used Metasploit's search feature to find an exploit. This time to make it interesting, we can use Google search. I normally like to look for results from Rapid7 (which is the same as Metasploit) or Exploit-db.</p>
 
 <p>After searching <i>Windows XP SP3 exploit</i> in Google search, I came across this one from Rapid 7:</p>
 
