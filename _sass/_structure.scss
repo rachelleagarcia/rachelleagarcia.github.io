@@ -7,14 +7,22 @@
 .page,
 .page__content {
 	width: 100%;
+  max-width: 1550px;
+  margin: 0 auto;
 }
 
-.wrap {
+.default_wrap {
 	position: relative;
 	margin: 0 auto;
   padding: 0 30px;
   width: 100%;
   max-width: 1200px;
+}
+
+.wrap {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 30px;
 }
 
 .grid {

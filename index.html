@@ -6,7 +6,7 @@ title: Home
 <div class="page-blog">
 	
 	<section class="all-posts">
-		<div class="wrap">
+		<div class="default_wrap">
 			<div class="posts__list grid">
 				{% for post in paginator.posts %}
 				{% if forloop.first == true %}
@@ -40,7 +40,7 @@ title: Home
 	{% if paginator.total_pages > 1 %}
 
 	<section class="pagination">
-		<div class="wrap">
+		<div class="default_wrap">
 			{% if paginator.previous_page %}
 			<a href="{{ paginator.previous_page_path | relative_url }}"
 				class="button--text--accent --left pagination__prev">Newer Posts</a>
