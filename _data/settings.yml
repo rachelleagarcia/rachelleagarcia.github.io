@@ -105,7 +105,7 @@ font_settings:
     line_height_small: 44
   h3:
     size: 19
-    size_small: 30
+    size_small: 16
     weight: 500
     letter_spacing: -1
     letter_spacing_small: -0.54

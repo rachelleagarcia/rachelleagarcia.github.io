@@ -232,6 +232,7 @@
       font-size: $p-size-small;
       line-height: 20px;
       overflow: auto;
+      max-height: 400px;
 
       .highlight {
         padding: 24px 28px;

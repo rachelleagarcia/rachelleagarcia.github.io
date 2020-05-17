@@ -1,7 +1,7 @@
 ---
 title: Legacy
 date: 2020-05-04 19:16:00
-description: Hack The Box Walkthrough
+description: HTB Walkthrough
 featured_image: '/images/blog/legacy/legacy.jpg'
 tags: ['Hack The Box']
 ---
@@ -53,8 +53,6 @@ As always, I like to see what options I have when I use a Metasploit module by t
 <img src="/images/blog/legacy/auxiliary.jpg" alt="auxiliary scan">
 
 Perfect! Based on the results above, the box is currently running *Windows XP SP3*. Now that we have confirmed the OS that the SMB is on, let's look for any existing exploits.
-
-<h2><a class="header_post" name="threatmodelling">Threat Modelling</a></h2>
 
 In the last box (Lame), we used Metasploit's search feature to find an exploit. This time to make it interesting, we can use Google search. I normally like to look for results from Rapid7 (which is the same as Metasploit) or Exploit-db.
 
