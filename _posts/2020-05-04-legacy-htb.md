@@ -8,13 +8,13 @@ tags: ['Hack The Box']
 
 Legacy is also one of the first machines released on Hack The Box (HTB) and aimed for beginners. It is a Windows box that is vulnerable to SMB bugs and I'll be using Metasploit to exploit them.
 
-## Hack the box
+<h2><a class="header_post" name="hackthebox">Hack The Box</a></h2>
  
 * Operating System: Windows
 * Difficulty: Easy
 
 
-## Information gathering
+<h2><a class="header_post" name="enumeration">Enumeration</a></h2>
 
 Let's start with enumeration by using nmap. As always, I like to use:
 
@@ -54,8 +54,7 @@ As always, I like to see what options I have when I use a Metasploit module by t
 
 Perfect! Based on the results above, the box is currently running *Windows XP SP3*. Now that we have confirmed the OS that the SMB is on, let's look for any existing exploits.
 
-
-## Threat modelling
+<h2><a class="header_post" name="threatmodelling">Threat Modelling</a></h2>
 
 In the last box (Lame), we used Metasploit's search feature to find an exploit. This time to make it interesting, we can use Google search. I normally like to look for results from Rapid7 (which is the same as Metasploit) or Exploit-db.
 
@@ -69,8 +68,7 @@ Here's what it says on the exploit's description:
 
 This exploit looks promising, so let's try using it.
 
-
-## Exploitation
+<h2><a class="header_post" name="exploitation">Exploitation</a></h2>
 
 To use the exploit that we found, we can follow the instructions found in the above link and type in:
 
