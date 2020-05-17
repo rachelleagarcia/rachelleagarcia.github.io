@@ -19,7 +19,24 @@
 
       @media only screen and (max-width: 1170px) {
         grid-template-columns: 1fr 1fr;
-        margin-left: 20px !important;
+        margin-left: 20px;
+       }
+
+        @media only screen and (max-width: 768px) {
+        grid-template-columns: 1fr;
+        position: relative;
+        overflow-x: hidden;
+        margin: 0;
+        max-width: 600px;
+       }
+
+        @media only screen and (max-width: 650px) {
+        max-width: 500px;
+        padding-left: 15px;
+       }
+
+        @media only screen and (max-width: 480px) {
+        max-width: 400px;
        }
     }
 
