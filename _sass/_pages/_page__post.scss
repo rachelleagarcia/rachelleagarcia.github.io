@@ -14,8 +14,13 @@
     flex-direction: column;
   }
 
-    .wrap {
-      grid-template-columns: 1fr 2fr 1fr;
+  .wrap {
+    grid-template-columns: 1fr 2fr 1fr;
+
+      @media only screen and (max-width: 1170px) {
+        grid-template-columns: 1fr 1fr;
+        margin-left: 20px !important;
+       }
     }
 
   .post__date {
@@ -40,6 +45,10 @@
   .table_contents { 
       padding-top: 80px;
       line-height: 20px;
+
+      @media only screen and (max-width: 1000px) {
+        display: none;
+      }
   }
 
   .table_contents__text { 
