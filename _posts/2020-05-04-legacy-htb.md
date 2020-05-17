@@ -96,4 +96,6 @@ Since we have root access, we can type in `shell` to that we have access to the 
 
 And that's it! We've now completed the Legacy box.
 
+<h2><a class="header_post" name="conclusion">Conclusion</a></h2>
 
+This goes to show that once you find a port open, in this case, SMB, always enumerate to find out what OS version the service is running. Once you know the version, it'll be easier to find out what the system is vulnerable to and where to look when it comes to finding exploits. 
