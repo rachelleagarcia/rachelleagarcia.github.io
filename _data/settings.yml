@@ -74,7 +74,7 @@ font_settings:
   body_font: 'Rubik, sans-serif'
   code_font: '"Ubuntu", sans-serif'
   regular_weight: 400
-  bold_weight: 700
+  bold_weight: 500
   site_title:
     small_size: 30
     medium_size: 40
