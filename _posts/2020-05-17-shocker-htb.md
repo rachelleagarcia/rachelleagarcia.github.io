@@ -2,18 +2,18 @@
 title: Shocker
 date: 2020-05-17 16:19
 description: HTB Walkthrough without Metasploit
-featured_image: '/images/blog/shocker/shocker.jpg'
+featured_image: '/images/blog/shocker/shocker.png'
 tags: ['Hack The Box']
 ---
 
 In this Hack The Box, we’ll be using DirBuster to look for hidden directories, and we’ll get to use the shellscript exploit to gain access to the box–all without using Metasploit, so let’s begin!
 
-<h2><a class="header_post" name="hackthebox">Hack The Box</a></h2>
+## Hack The Box
 
 * Operating System: Linux 
 * Difficulty: Easy
 
-<h2><a class="header_post" name="enumeration">Enumeration</a></h2>
+## Enumeration
 
 Let's start with the good ol' nmap scan. 
 
@@ -84,7 +84,7 @@ Then we can go ahead and run the script..
 
 ..Yes! Confirmed that this box might be vulnerable to shellshock, so let's use it. 
 
-<h2><a class="header_post" name="exploitation">Exploitation</a></h2>
+## Exploitation
 
 Before moving forward with exploitation, let's recap what we know so far:
 
@@ -125,6 +125,6 @@ Before executing the command, we'll want to create a Netcat listener first in an
 
 We did it! We can use the `whoami` command to verify root access, and we do. Congrats! We now have access to the Shocker HTB. From here, we can locate the root.txt and user.txt file to grab the flags. 
 
-<h2><a class="header_post" name="conclusion">Conclusion</a></h2>
+## Conclusion
 
 Running DirBuster on web servers is extremely helpful because it'll find directories that you wouldn't normally see when you first go to a website. In this box, we were able to locate the cgi-bin directory which housed scripts. Once we found that out, we were able to upload and execute our own scripts to gain root access. 

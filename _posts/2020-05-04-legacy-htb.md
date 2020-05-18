@@ -8,27 +8,51 @@ tags: ['Hack The Box']
 
 Legacy is also one of the first machines released on Hack The Box (HTB) and aimed for beginners. It is a Windows box that is vulnerable to SMB bugs and I'll be using Metasploit to exploit them.
 
-<h2><a class="header_post" name="hackthebox">Hack The Box</a></h2>
+## Hack The Box
  
 * Operating System: Windows
 * Difficulty: Easy
 
 
-<h2><a class="header_post" name="enumeration">Enumeration</a></h2>
+## Enumeration
 
 Let's start with enumeration by using nmap. As always, I like to use:
 
 <img src="/images/blog/legacy/ipaddress.jpg" alt="nmap scan">
 
-Once the nmap scan completes, we can take a look at the results:
+	PORT     STATE  SERVICE       VERSION
+	139/tcp  open   netbios-ssn   Microsoft Windows netbios-ssn
+	445/tcp  open   microsoft-ds  Windows XP microsoft-ds
+	3389/tcp closed ms-wbt-server
+	Device type: general purpose|specialized
+	Running (JUST GUESSING): Microsoft Windows XP|2003|2000|2008 (94%), General Dynamics embedded (87%)
+	OS CPE: cpe:/o:microsoft:windows_xp::sp3 cpe:/o:microsoft:windows_server_2003::sp1 cpe:/o:microsoft:windows_server_2003::sp2 cpe:/o:microsoft:windows_2000::sp4 cpe:/o:microsoft:windows_server_2008::sp2
+	Aggressive OS guesses: Microsoft Windows XP SP3 (94%), Microsoft Windows Server 2003 SP1 or SP2 (92%), Microsoft Windows XP (92%), Microsoft Windows Server 2003 SP2 (91%), Microsoft Windows XP SP2 or Windows Server 2003 (90%), Microsoft Windows 2000 SP4 (90%), Microsoft Windows XP SP2 or SP3 (90%), Microsoft Windows 2000 SP4 or Windows XP SP2 or SP3 (90%), Microsoft Windows 2003 SP2 (89%), Microsoft Windows XP SP2 (89%)
+	No exact OS matches for host (test conditions non-ideal).
+	Network Distance: 2 hops
+	Service Info: OSs: Windows, Windows XP; CPE: cpe:/o:microsoft:windows, cpe:/o:microsoft:windows_xp
 
-<img src="/images/blog/legacy/nmapresults1.jpg" alt="nmap results">
+	Host script results:
+	|_clock-skew: mean: 5d00h30m01s, deviation: 2h07m16s, median: 4d23h00m01s
+	|_nbstat: NetBIOS name: LEGACY, NetBIOS user: <unknown>, NetBIOS MAC: 00:50:56:b9:34:e8 (VMware)
+	| smb-os-discovery: 
+	|   OS: Windows XP (Windows 2000 LAN Manager)
+	|   OS CPE: cpe:/o:microsoft:windows_xp::-
+	|   Computer name: legacy
+	|   NetBIOS computer name: LEGACY\x00
+	|   Workgroup: HTB\x00
+	|_  System time: 2020-05-24T02:40:58+03:00
+	| smb-security-mode: 
+	|   account_used: <blank>
+	|   authentication_level: user
+	|   challenge_response: supported
+	|_  message_signing: disabled (dangerous, but default)
+	|_smb2-time: Protocol negotiation failed (SMB2)
 
-It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, *Windows XP*. 
 
-<img src="/images/blog/legacy/nmapresults2.jpg" alt="nmap results">
+It looks like we have port 139 and 445 open, and based on the nmap scan, we might have also found the SMB OS, *Windows XP*. Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary modules.
 
-Before we exploit this box, let's verify that the OS is the right one by using one of Metasploit's auxiliary modules.
+### SMB Information
 
 To open up Meatsploit whilst in the command line interface, type in:
 
@@ -66,7 +90,7 @@ Here's what it says on the exploit's description:
 
 This exploit looks promising, so let's try using it.
 
-<h2><a class="header_post" name="exploitation">Exploitation</a></h2>
+## Exploitation
 
 To use the exploit that we found, we can follow the instructions found in the above link and type in:
 
@@ -96,6 +120,6 @@ Since we have root access, we can type in `shell` to that we have access to the 
 
 And that's it! We've now completed the Legacy box.
 
-<h2><a class="header_post" name="conclusion">Conclusion</a></h2>
+## Conclusion
 
 This goes to show that once you find a port open, in this case, SMB, always enumerate to find out what OS version the service is running. Once you know the version, it'll be easier to find out what the system is vulnerable to and where to look when it comes to finding exploits. 

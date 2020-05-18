@@ -35,6 +35,7 @@ markdown: kramdown
 highlighter: rouge
 
 kramdown:
+  auto_ids: true
   input: GFM
   syntax_highlighter_opts:
     span:
