@@ -2,7 +2,7 @@
 title: Shocker
 date: 2020-05-17 16:19
 description: HTB Walkthrough without Metasploit
-featured_image: '/images/blog/shocker/shocker.png'
+featured_image: '/images/blog/shocker/shocker.jpg'
 tags: ['Hack The Box']
 ---
 
