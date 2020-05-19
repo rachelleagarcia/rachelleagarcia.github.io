@@ -239,14 +239,3 @@ code {
   background: $accent-color;
   color: $background-color;
 }
-
-.table_contents { 
-  font-size: 12px;
-  list-style: none;
-
-  &__ul { 
-    list-style: none;
-    line-height: 2.3;
-    position: fixed;
-  }
-}
