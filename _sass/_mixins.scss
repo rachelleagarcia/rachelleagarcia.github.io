@@ -4,7 +4,12 @@
 
 // - - - - - - - - - - - - - - - - - -
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Responsive
+
+// - - - - - - - - - - - - - - - - - -
+
+// Responsive
+
+// - - - - - - - - - - - - - - - - - -
 // Usage: @include mq(tabletp) {}
 
 $break-phonel: 480px;
@@ -41,7 +46,11 @@ $break-desktop: 1420px;
   }
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Transitions
+// - - - - - - - - - - - - - - - - - -
+
+// Transitions
+
+// - - - - - - - - - - - - - - - - - -
 // Usage: @include transition(color .3s ease);
 
 @mixin transition($args...) {
@@ -52,7 +61,11 @@ $break-desktop: 1420px;
   transition: $args;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Animations
+// - - - - - - - - - - - - - - - - - -
+
+// Animations
+
+// - - - - - - - - - - - - - - - - - -
 // Usage:
 // @include keyframes(slide-down) {
 //   0% { opacity: 1; }
@@ -88,7 +101,11 @@ $break-desktop: 1420px;
   animation: #{$str};
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Transforms
+// - - - - - - - - - - - - - - - - - -
+
+// Transforms
+
+// - - - - - - - - - - - - - - - - - -
 // Usage:
 // @include skew(25,10);
 // @include transform-origin(top left);
@@ -121,7 +138,11 @@ $break-desktop: 1420px;
   transform-origin: $origin;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Styles
+// - - - - - - - - - - - - - - - - - -
+
+// Styles
+
+// - - - - - - - - - - - - - - - - - -
 
 @mixin box-shadow($top, $left, $blur, $color, $inset: false) {
   @if $inset {
