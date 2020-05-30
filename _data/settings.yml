@@ -112,10 +112,10 @@ font_settings:
     line_height: 48
     line_height_small: 36
   h4:
-    size: 15
-    size_small: 13
-    weight: 500
-    letter_spacing: 0
+    size: 32
+    size_small: 28
+    weight: 700
+    letter_spacing: -1
     letter_spacing_small: -0.6
     line_height: 36
   h5:

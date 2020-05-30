@@ -26,7 +26,7 @@ Juice Shop has several challenges ranging in difficulty based on their star leve
 
 ### Two Stars
 
-**Login Admin - Log in with the administrator's user account.**
+**Login Admin - Log in with the administrator's user account**
 
 The first thing we can do is try and login to Juice Shop while having BurpSuite open. We can enter in something random for our login attempt: 
 
@@ -55,7 +55,7 @@ So in other words, because the username is defined as *True* and it ignored the 
 
 ### Three Stars
 
-**Login Bender/Jim - Log in with Bender's (or Jim's) user account.**
+**Login Bender/Jim - Log in with Bender's (or Jim's) user account**
 
 *FYI, the steps below work for either Bender or Jim's account, but for example purposes I will be logging into as Bender's account.*
 
@@ -69,3 +69,4 @@ We can edit the username field by adding SQL (similar to what we used in the Log
 
 And if we press the Send button again, it worked! So now we also have access to Bender's account. If you want, you can go through and complete the same steps for Jim's account too.
 
+**Christmas Special - Order the Christmas special offer of 2014**
