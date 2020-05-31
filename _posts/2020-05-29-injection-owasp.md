@@ -22,7 +22,7 @@ Essentially, an Injection is when an attacker can send data to an interpreter, i
 
 ## The Setup 
 
-First, we'll need to install Juice Shop. Juice Shop has several challenges ranging in difficulty based on their star levels. One star being the easiest and five stars being the hardest. In this post, we'll be completing all of the Injection challenges. Here's GitHub link that will show you how to install it:
+First, we'll need to install Juice Shop. Juice Shop has several challenges ranging in difficulty based on their star levels. One star being the easiest and six stars being the hardest. In this post, we'll be completing all of the Injection challenges. Here's GitHub link that will show you how to install it:
 
 [OWASP Juice Shop](https://github.com/bkimminich/juice-shop#from-sources)
 
@@ -159,4 +159,27 @@ That said, if we press the Send button in Burp Suite, we should get the original
 <img src="/images/blog/injection/finaldbschema.png" alt="completed dbschema challenge">
 
 Another challenge completed. 
+
+## Four Star Challenges
+
+### User Credentials
+
+* Description: Retrieve a list of all user credentials via SQL Injection.
+
+This challenge is very similar to how attackers can gain sensitive information from a database if the sytem is vulnerable to SQL injection. 
+
+In the Database Schema challenge, we found out that the q paramter is suspectable to SQL injection. We can use the similar payload but alter it slightly so that we're pulling data from the Users table: 
+
+	qwert')) UNION SELECT sql, '2', '3', '4', '5', '6', '7', '8', '9' FROM Users--
+
+Next, we'll want to replace the fixed values with the correct column names. We can either guess them or remember them from previous SQL errors when we were attacking the Login form. 
+
+	qwert')) UNION SELECT id, email, password, '4', '5', '6', '7', '8', '9' FROM Users--
+
+Once we click the Send button, we should get the Response: 
+
+<img src="/images/blog/injection/userlist.jpg" alt="completed dbschema challenge">
+
+There we go! We did it, a list of all the users and their passwords.
+
 
