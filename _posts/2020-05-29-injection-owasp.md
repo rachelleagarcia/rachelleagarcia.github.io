@@ -6,23 +6,21 @@ featured_image: '/images/blog/injection/injection.png'
 tags: ['OWASP']
 ---
 
-As a part of the web application series, I will be using Juice Shop. Juice Shop is an unsecure web application created by Bjorn Kimminich. It contains OWASP Top Ten vulnerabilities and many other security flaws found in real-world applications.
+As a part of the web application series, I will be using Juice Shop. Juice Shop is an unsecure web application created by Bjorn Kimminich. It contains OWASP's Top Ten vulnerabilities and many other security flaws found in real-world applications.
 
 You can read more about OWASP Juice Shop here: [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
 
-In this post we'll be going through One of OWASP Top Ten vulnerabilities, Injection, using Juice Shop to show what Injection looks like and how we can defend our web applications against these types of attacks.
+In this post we'll be going through one of the OWASP Top Ten vulnerabilities, Injection, using Juice Shop to show what it looks like and how we can defend our web applications against these types of attacks.
 
 ## Introduction 
 
-Before we start, what does Injection mean, and why is it a security risk?
+Before we start, OWASP has a great article that goes over Injection: [OWASP: Injection](https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A1-Injection)
 
-OWASP has a great article that goes over Injection: [OWASP: Injection](https://owasp.org/www-project-top-ten/OWASP_Top_Ten_2017/Top_10-2017_A1-Injection)
-
-Essentially, an Injection is when an attacker can send data to an interpreter, in order to gain sensitive information. One example of a type of Injection attack is SQL injection and it is what we’ll be using in our web application, Juice Shop.
+Essentially, Injection is when an attacker can send data to an interpreter to gain sensitive information. An example of an Injection attack is SQL injection, which is what we’ll be using in Juice Shop.
 
 ## The Setup 
 
-First, we'll need to install Juice Shop. Juice Shop has several challenges ranging in difficulty based on their star levels. One star being the easiest and six stars being the hardest. In this post, we'll be completing all of the Injection challenges. Here's GitHub link that will show you how to install it:
+First, we'll need to install Juice Shop. Here's GitHub link that will show you how to install it:
 
 [OWASP Juice Shop](https://github.com/bkimminich/juice-shop#from-sources)
 
@@ -30,7 +28,7 @@ We'll also need Burp Suite which should already be installed in Kali. Burp Suite
 
 [Burp Suite by PortSwigger](https://portswigger.net/burp)
 
-Lastly, you may also want to checkout the list of Injection challenges that we'll be completing in this post. There's also some helpful tips in each challenge that Bjorn mentions. Here's a Gitbook:
+Lastly, here's the Gitbook that has a list of Injection challenges that we'll be completing. There's also some helpful tips in each challenge that Bjorn mentions. 
 
 [Injection Challenges - Juice Shop](https://bkimminich.gitbooks.io/pwning-owasp-juice-shop/part2/injection.html)
 
@@ -51,13 +49,13 @@ Since Burp Suite was open, we can collect the HTTP Request in the Proxy tab, and
 
 <img src="/images/blog/injection/admin.jpg" alt="burp suite admin login">
 
-Now, if we head into the Repeater tab and press the Send button, we get authentication denied in the Response area. Let's see if we can add SQL to it and bypass the login authentication to gain admin access.
+Now, if we head into the Repeater tab and press the Send button, we get a response that says authentication denied. Let's see if we can add SQL to it to bypass the login authentication to gain admin access.
 
 So instead of "admin" let's type in "admin' or 1=1--" in the Request section.
 
 <img src="/images/blog/injection/adminrequest.jpg" alt="submitting a request through burp suite">
 
-Now, if we press send... it worked! We have access to the admin account. We can see that the admin email address is **admin@juice-sh.op** at the bottom of the Response section too which may come in handy later. 
+Now, if we press send... it worked! We now have access to the admin account. We can also see the admin's email address **admin@juice-sh.op** at the bottom of the Response section too which may come in handy later. 
 
 Why did this work? Well, by adding: 
 
@@ -65,7 +63,7 @@ Why did this work? Well, by adding:
 * `or 1=1` = means or True. 
 * `--` = will comment out the rest of the code.
 
-In other words, because the username is defined as *True* and it ignored the password field for authentication, it allowed us to login in as admin.
+In other words, because the username is defined as *True* and it ignored the password field for authentication, we were allowed to login in as admin.
 
 ## Three Star Challenges
 
@@ -83,15 +81,15 @@ We can follow the similar steps in the Login Admin challenge, and edit the usern
 
 <img src="/images/blog/injection/bender.jpg" alt="login attempt for benders account">
 
-And if we press the Send button again, it worked! We get a success response back in the Response section so we also have access to Bender's account. If you want, you can go through and complete the same steps for Jim's account too.
+And if we press the Send button again, it worked! We get a success message back in the Response section, so now we also have access to Bender's account. If you want, you can repeat the same steps to gain access to Jim's account too.
 
 ### Christmas Special 
 
 * Description: Order the Christmas special offer of 2014
 
-Since the Christmas special is hidden, we'll need to try and search for it within the database. To do this, we can attempt to use the search bar in Juice Shop while running Burp Suite. 
+Since the Christmas special is hidden, we can try to search for it within the database. But.. we have to find it first, so let's see if we have any luck with the search bar while running Burp Suite. 
 
-When we search for something in Juice Shop, we can see the HTTP Request in Burp Suite: 
+When we search for something in Juice Shop, we see the HTTP Request in Burp Suite: 
 
 	GET /rest/products/search?q= 
 
@@ -99,15 +97,15 @@ If we right-click, send this to the Reapeter, add a `'` after the `q=` and press
 
 	{"status":"success","data":[]}
 
-A secure web application would not have provided us with a success status. Since the webpage accepted our input, we know that it can accept SQL.
+A secure web application would not have provided us with a success status, but because it did, we can try adding additional SQL to complete this challenge.
 
-Meaning, if we enter in `'))--` then we might be able to get a response that shows us everything within the database... and it did! Why? Because we're changing the SQL query to say: 
+So if we enter in `'))--` we might be able to get a response that shows us everything within the database... and it did! Why? Because we're changing the SQL query to say: 
 
 "SELECT * FROM Products WHERE ((name LIKE '%**'))—-**
 
 Meaning, `'))` closes the original query and `--` commented out the rest of it. 
 
-This is why the Response gave us a list of all the products listed in the database. 
+This is why the response gave us a list of all the products listed in the database. 
 
 Now that we can see all of the products, we can search for the word "Christmas" to locate the Christmas special. Note that the ID number is 10. 
 
@@ -125,7 +123,7 @@ Look at that! We now have the Christmas special added to our shopping basket.
 
 * Description: Exfiltrate the entire DB schema definition via SQL Injection
 
-In the Christmas special, we found out that we can add parameters after the `q` and if we play around with the parameters and entered something where the output would produce errors, the output would also display that we are using an SQL database called SQLite.
+In the Christmas special, we found out that we can add parameters after the `q`, and if we play around with the parameters and entered something where the output would produce errors, the output would also display that we are using an SQL database called SQLite.
 
 SQLite uses a database schema that is stored in a table called sqlite_master.
 
@@ -134,7 +132,7 @@ SQLite uses a database schema that is stored in a table called sqlite_master.
 
 Read more about SQLite here: [SQLite FAQs](https://www.sqlite.org/faq.html#q7)
 
-Meaning, if we edited the Request to `')) UNION SELECT * FROM sqlite_master--` and sent the Request in Burp Suite, the Response tells us that there is an error:
+Meaning, if we edited the Request to `')) UNION SELECT * FROM sqlite_master--` and sent the Request in Burp Suite, the Response area tells us that there is an error:
 
 <img src="/images/blog/injection/dbschema.png" alt="SQL error">
 
@@ -154,7 +152,7 @@ Next, we'll want to remove the unwanted product results by adding `qwert` and ch
 
 > Why sql? The sql field is the text of the original CREATE TABLE or CREATE INDEX statement that created the table or index.
 
-That said, if we press the Send button in Burp Suite, we should get the original table.. and we did! 
+And if we press the Send button in Burp Suite, we should get the original table.. and we did! 
 
 <img src="/images/blog/injection/finaldbschema.png" alt="completed dbschema challenge">
 
@@ -168,7 +166,7 @@ Another challenge completed.
 
 This challenge is very similar to how attackers can gain sensitive information from a database if the sytem is vulnerable to SQL injection. 
 
-In the Database Schema challenge, we found out that the q paramter is suspectable to SQL injection. We can use the similar payload but alter it slightly so that we're pulling data from the Users table: 
+In the Database Schema challenge, we found out that the `q` paramter is suspectable to SQL injection. As a result, we can use a similar payload but alter it slightly so that we're pulling data from the Users table: 
 
 	qwert')) UNION SELECT sql, '2', '3', '4', '5', '6', '7', '8', '9' FROM Users--
 
@@ -176,7 +174,7 @@ Next, we'll want to replace the fixed values with the correct column names. We c
 
 	qwert')) UNION SELECT id, email, password, '4', '5', '6', '7', '8', '9' FROM Users--
 
-Once we click the Send button, we should get the Response: 
+Once we click the Send button, we should get the response: 
 
 <img src="/images/blog/injection/userlist.jpg" alt="completed dbschema challenge">
 
