@@ -3,7 +3,7 @@ title: Injection
 date: 2020-05-29 21:58
 description: One of the OWASP Top 10 Web Apps Security Risks
 featured_image: '/images/blog/injection/injection.png'
-tags: ['OWASP']
+categories: owasp
 ---
 
 As a part of the web application series, I will be using Juice Shop. Juice Shop is an unsecure web application created by Bjorn Kimminich. It contains OWASP's Top Ten vulnerabilities and many other security flaws found in real-world applications.

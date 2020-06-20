@@ -3,7 +3,7 @@ title: Shocker
 date: 2020-05-17 16:19
 description: HTB Walkthrough without Metasploit
 featured_image: '/images/blog/shocker/shocker.png'
-tags: ['Hack The Box']
+categories: htb
 ---
 
 In this Hack The Box, we’ll be using DirBuster to look for hidden directories, and we’ll get to use the shellscript exploit to gain access to the box–all without using Metasploit, so let’s begin!

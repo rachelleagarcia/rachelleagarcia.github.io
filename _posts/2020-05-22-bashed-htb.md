@@ -3,7 +3,7 @@ title: Bashed
 date: 2020-05-22 18:59
 description: HTB Walkthrough without Metasploit
 featured_image: '/images/blog/bashed/bashed.png'
-tags: ['Hack The Box']
+categories: htb
 ---
 
 In Bashed, we'll find a hidden directory where we'll have access to a bash terminal through a web browser. We'll use this bash terminal to gain access to the box by creating a reverse shell (x2!) to gain root access, without using Metasploit. So let's get started.

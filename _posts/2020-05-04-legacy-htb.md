@@ -3,7 +3,7 @@ title: Legacy
 date: 2020-05-04 19:16:00
 description: HTB Walkthrough
 featured_image: '/images/blog/legacy/legacy.jpg'
-tags: ['Hack The Box']
+categories: htb
 ---
 
 Legacy is also one of the first machines released on Hack The Box (HTB) and aimed for beginners. It is a Windows box that is vulnerable to SMB bugs and I'll be using Metasploit to exploit them.
