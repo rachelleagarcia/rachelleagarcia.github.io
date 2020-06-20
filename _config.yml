@@ -49,6 +49,10 @@ sass:
 
 plugins:
   - jekyll-sitemap
+  - jekyll-include-cache
+
+remote_theme:
+  - rachelleagarcia
 
 paginate: 7
 paginate_path: "/blog/page-:num/"
