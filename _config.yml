@@ -46,8 +46,8 @@ kramdown:
 sass:
   style: compressed
 
-plugins:
-  - jekyll-sitemap
+remote_theme:
+  - rachelleagarcia
 
 paginate: 7
 paginate_path: "/blog/page-:num/"

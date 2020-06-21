@@ -10,7 +10,7 @@ menu_settings:
     - title: 'Home'
       url: '/'
     - title: 'HTB'
-      url: '/category/htb/'
+      url: '/category/htb'
     - title: 'OWASP'
       url: '/category/owasp/'
     - title: 'About Me'
