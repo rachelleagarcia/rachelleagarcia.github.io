@@ -29,7 +29,6 @@ defaults:
       type: "posts"
     values:
       layout: "post"
-  
 
 markdown: kramdown
 highlighter: rouge
@@ -46,10 +45,6 @@ kramdown:
   
 sass:
   style: compressed
-
-plugins:
-  - jekyll-sitemap
-  - jekyll-include-cache
 
 remote_theme:
   - rachelleagarcia
