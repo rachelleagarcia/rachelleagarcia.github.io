@@ -8,7 +8,6 @@
   .post__title {
     margin-bottom: 16px;
     width: 100%;
-    margin: 0 0 40px 0;
     max-width: 420px;
     display: flex;
     flex-direction: column;
@@ -323,10 +322,6 @@
   }
 
   @include mq(tabletp) {
-
-    .post__title {
-      margin-bottom: 32px;
-    }
 
     .post__date {
       margin-bottom: 80px;
