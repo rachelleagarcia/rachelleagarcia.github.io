@@ -54,17 +54,17 @@ Next, we'll use Dirb. Dirb is a web content scanner that looks for existing and/
 
 To use Dirb, we can enter the following into the Kali terminal:
 
-	http://10.10.10.75/nibbleblog/
+	dirb http://10.10.10.75/nibbleblog/
 
 And here are our results:
 
 <img src="/images/blog/nibbles/dirb.png" alt="dirb results">
 
-As we're going through the directories that Dirb found, we can see that there's an `admin.php` directory that looks like a login page. The .php extension also tells us that the target can run .php files.
+As we're going through the directories that Dirb found, we can see that there's an `admin.php` directory and if we head there, it looks like a login page. The .php extension also tells us that the target can run .php files.
 
 <img src="/images/blog/nibbles/admin.png" alt="admin page for nibbleblog">
 
-But before going in there, we should look into the other directories to see if there's anything else that might be interesting—and there was! There's a **user.xml** file that displays the list of users. One of which is called "admin" so we can try using this username to log in. 
+Let's take a look at the other directories to see if there's anything else that might be interesting—and there was! There's a **user.xml** file that displays the list of users. One of which is called "admin" so we can try using this username to login to the admin page. 
 
 <img src="/images/blog/nibbles/users.png" alt="dirb results">
 
@@ -72,11 +72,11 @@ We could try guessing the password based on what we know, luckily "nibbles" work
 
 ### Nibbleblog Admin
 
-Now that we're admin, we can browse a bit more on the admin side to see if there's anything that we can use. Taking a look, we can easily find out that this Nibbleblog is running on version 4.0.3. Since we know the version number, we can see if there are any existing exploits... and there is: [CVE-2015-6967](https://nvd.nist.gov/vuln/detail/CVE-2015-6967)
+Now that we're logged in as admin, we can browse a bit more to see if there's anything that we can use. Taking a look, we can see that this Nibbleblog is running on version 4.0.3. Since we know the version number, we can see if there are any existing exploits... and there is: [CVE-2015-6967](https://nvd.nist.gov/vuln/detail/CVE-2015-6967)
 
 > Unrestricted file upload vulnerability in the My Image plugin in Nibbleblog before 4.0.5 allows remote administrators to execute arbitrary code by uploading a file with an executable extension, then accessing it in content/private/plugins/my_image/image.php.
 
-Oo, and if we go back into Nibbleblog, we see that we have access to the My Image plugin, so let's try out this exploit! 
+Oo, and if we go back into Nibbleblog, we see that we have access to the My Image plugin, so let's try this exploit! 
 
 <img src="/images/blog/nibbles/image.png" alt="dirb results">
 
@@ -84,8 +84,8 @@ Oo, and if we go back into Nibbleblog, we see that we have access to the My Imag
 
 Before we start exploiting the box, let’s recap what we found during the enumeration phase:
 
-* We found out that port 80 was open and was a blog running on Nibbleblog.
-* From Dirb, we found the log in screen, users, and verified the target can run .php files. 
+* We found out that port 80 was open and it was a blog running on Nibbleblog.
+* From Dirb, we found the login screen, users, and verified the target can run .php files. 
 * Because we found out the user "admin," we were able to guess the password.
 * Once we logged in, we found out the version number, which helped locate an exploit.
 
@@ -96,7 +96,7 @@ Alright, now that we've recapped what we know, let's move on to the exploitation
 Since we know that the platform was built on PHP (because of the .php files), we can use [Pentest Monkey's](http://pentestmonkey.net/tools/web-shells/php-reverse-shell) PHP reverse shell script to gain access to the machine. Here are the steps to do it: 
 
 1. Download the PHP reverse shell file. 
-2. Change the IP address to the one in Kali. 
+2. Open the file and change the IP address to the one in Kali. 
 3. Edit the file name (if you want) to image.php. 
 4. Upload the file into the My Image plugin section. 
 
